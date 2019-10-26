@@ -1,100 +1,44 @@
-/* -----------------------------------
- *  WARNING:
- * -----------------------------------
- *  Your code may fail to compile
- *  because it contains public class
- *  declarations.
- *  To fix this, please remove the
- *  "public" keyword from your class
- *  declarations.
- */
-
-/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode(int x) { val = x; }
- * }
- */
 class Solution {
-
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        Stack<Integer> s1 = new Stack<>();
+        Stack<Integer> s2 = new Stack<>();
+        while(l1 != null){
+            s1.push(l1.val);
+            l1 = l1.next;
+        }
+        while(l2 != null){
+            s2.push(l2.val);
+            l2 = l2.next;
+        }
         int carry = 0;
-        ListNode prev = new ListNode(0);
-        ListNode head = prev;
-        while(l1 != null || l2 != null || carry != 0){
-            ListNode curr = new ListNode(0);
-            int sum = (( l1 == null) ? 0 : l1.val) + (( l2 == null) ? 0 : l2.val) + carry;
-            curr.val = sum%10;
-            carry = sum / 10;
-            prev.next = curr;
-            prev = prev.next;
-            
-            l1  = (l1 == null) ? l1 : l1.next;
-            l2  = (l2 == null) ? l2 : l2.next;
+        int d = 0;
+        ListNode curr = new ListNode(0);
+        ListNode temp = curr;
+        while(!s1.isEmpty() || !s2.isEmpty() || d>0){
+            int v1 = s1.isEmpty() ? 0:s1.pop();
+            int v2 = s2.isEmpty() ? 0:s2.pop();
+            int sum = d + v1 + v2;
+            if(sum>=10){
+                sum -= 10;
+                carry++;
+            }
+            temp.next = new ListNode(sum);
+            d = carry;
+            carry = 0;
+            temp = temp.next;
         }
-        return head.next;
+        
+            return reverse(curr.next);
     }
-}
-
-public class MainClass {
-    public static int[] stringToIntegerArray(String input) {
-        input = input.trim();
-        input = input.substring(1, input.length() - 1);
-        if (input.length() == 0) {
-          return new int[0];
+    public ListNode reverse(ListNode head){
+        ListNode node = head;
+        ListNode prev = null;
+        while(node != null){
+            ListNode next = node.next;
+            node.next = prev;
+            prev = node;
+            node = next;
         }
-    
-        String[] parts = input.split(",");
-        int[] output = new int[parts.length];
-        for(int index = 0; index < parts.length; index++) {
-            String part = parts[index].trim();
-            output[index] = Integer.parseInt(part);
-        }
-        return output;
-    }
-    
-    public static ListNode stringToListNode(String input) {
-        // Generate array from the input
-        int[] nodeValues = stringToIntegerArray(input);
-    
-        // Now convert that list into linked list
-        ListNode dummyRoot = new ListNode(0);
-        ListNode ptr = dummyRoot;
-        for(int item : nodeValues) {
-            ptr.next = new ListNode(item);
-            ptr = ptr.next;
-        }
-        return dummyRoot.next;
-    }
-    
-    public static String listNodeToString(ListNode node) {
-        if (node == null) {
-            return "[]";
-        }
-    
-        String result = "";
-        while (node != null) {
-            result += Integer.toString(node.val) + ", ";
-            node = node.next;
-        }
-        return "[" + result.substring(0, result.length() - 2) + "]";
-    }
-    
-    public static void main(String[] args) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        String line;
-        while ((line = in.readLine()) != null) {
-            ListNode l1 = stringToListNode(line);
-            line = in.readLine();
-            ListNode l2 = stringToListNode(line);
-            
-            ListNode ret = new Solution().addTwoNumbers(l1, l2);
-            
-            String out = listNodeToString(ret);
-            
-            System.out.print(out);
-        }
+        return prev;
     }
 }
